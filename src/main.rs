@@ -1,10 +1,10 @@
+use std::env;
 use std::{
     fs::File,
     io::{BufWriter, Write},
 };
 
 use components::{charge::*,point::*};
-
 mod components;
 mod util;
 
@@ -57,7 +57,10 @@ fn simulation(b_field: impl Fn(components::point::Point) -> components::point::P
 
 fn main() {
     println!("STARTED SETUP.");
-    let (mut particles, (e_coeffs,e_pows), (b_coeffs,b_pows), max_t) = util::setup();
+    let input = env::args().nth(1).unwrap();
+    let output = env::args().nth(2).unwrap();
+    println!("{}",input);
+    let (mut particles, (e_coeffs,e_pows), (b_coeffs,b_pows), max_t) = util::setup(input);
     println!("FINISHED SETUP.");
 
     let e_field = |p: components::point::Point| -> components::point::Point {
@@ -75,7 +78,7 @@ fn main() {
             b_coeffs[2]*f64::powf(p.z(),b_pows[0])
         )
     };
-    let write_file = File::create("output.txt").unwrap();
+    let write_file = File::create(output).unwrap();
     let mut writer = BufWriter::new(&write_file);
     writeln!(writer, "{} {} {} {} {} {} {} {} {} {} {} {}", e_coeffs[0],e_pows[0],e_coeffs[1],e_pows[1],e_coeffs[2],e_pows[2],
         b_coeffs[0],b_pows[0],b_coeffs[1],b_pows[1],b_coeffs[2],b_pows[2]).unwrap();

@@ -15,8 +15,8 @@ fn field_constants(field_consts: Vec<&str>) -> (Vec<String>,Vec<String>) {
     return (coeffs,pows);
 }
 
-pub fn setup() -> (Vec<crate::components::charge::Charge>, (Vec<f64>, Vec<f64>), (Vec<f64>,Vec<f64>), f64) {
-    let contents = fs::read_to_string("input.txt")
+pub fn setup(input: String) -> (Vec<crate::components::charge::Charge>, (Vec<f64>, Vec<f64>), (Vec<f64>,Vec<f64>), f64) {
+    let contents = fs::read_to_string(input.trim())
         .expect("Should have been able to read the file");
 
     let input: Vec<&str> = contents.split('\n').collect();
