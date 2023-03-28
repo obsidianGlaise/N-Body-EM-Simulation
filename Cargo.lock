@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "plasma_simulation"
+name = "em_simulation"
 version = "0.1.0"
