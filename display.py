@@ -57,8 +57,6 @@ def run(f_in,f_out,desc):
     fig = plt.figure(figsize=(24,18))
     ax = fig.add_subplot(121,projection='3d')
 
-
-
     print("PLOT DATA.",desc)
     points = [ax.plot([values[i][0][0]], [values[i][0][1]], [values[i][0][2]], 'o', color=charge_color(charges[i]), label='{}'.format(i)) for i in range(len(values))]
     texts = [ax.text2D(1, 0.97-i*0.025,  '({:.2f},{:.2f},{:.2f})'.format(values[i][0][0],values[i][0][1],values[i][0][2]), transform=ax.transAxes) for i in range(len(values))]
@@ -71,16 +69,20 @@ def run(f_in,f_out,desc):
     ax.set_ylim((-10,10)) 
     ax.set_zlim((-10,10))
 
+    ratio=10
+    maximal = max([len(i) for i in values])
+    n_values = [n for n in range(maximal) if n % ratio == 0 ]
 
     def update_point(n, values, points):
+        ps = []
         for i in range(len(points)):
             if n < len(values[i]):
                 p, = points[i]
                 p.set_data(np.array([values[i][n][0]]),np.array([values[i][n][1]]))
                 p.set_3d_properties(values[i][n][2], 'z')
                 texts[i].set_text('({:.2f},{:.2f},{:.2f})'.format(values[i][n][0],values[i][n][1],values[i][n][2]))
-
-        return points
+                ps.append(p)
+        return tuple(ps)
 
     ax = fig.add_subplot(122,projection='3d')
     # Create a grid of points in x, y, and z directions
@@ -104,12 +106,12 @@ def run(f_in,f_out,desc):
 
 
     print("ANIMATE DATA.",desc)
-    ani=animation.FuncAnimation(fig, update_point, max([len(i) for i in values]), fargs=(values, points))
+    ani=animation.FuncAnimation(fig, update_point, n_values, fargs=(values, points), blit=True)
     print("SAVE ANIMATION.",desc)
-    writervideo = animation.FFMpegWriter(fps=60)
+    writervideo = animation.FFMpegWriter(fps=30)
     ani.save(f_out, writer=writervideo)
     print("DONE.",desc)
 
 
 if __name__ == '__main__':
-    run(sys.arg[1],sys.argv[2],0)
+    run(sys.argv[1],sys.argv[2],0)

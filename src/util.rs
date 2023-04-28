@@ -1,5 +1,5 @@
 use std::fs;
-use crate::components::{charge::*};
+use crate::components::{charge::*,point::*};
 
 fn to_float(s: String) -> f64 {
     return s.parse::<f64>().unwrap();
@@ -15,12 +15,13 @@ fn field_constants(field_consts: Vec<&str>) -> (Vec<String>,Vec<String>) {
     return (coeffs,pows);
 }
 
-pub fn setup(input: String) -> (Vec<crate::components::charge::Charge>, (Vec<f64>, Vec<f64>), (Vec<f64>,Vec<f64>), f64) {
+pub fn setup(input: String) -> (Vec<crate::components::charge::Charge>, (Vec<f64>, Vec<f64>), (Vec<f64>,Vec<f64>), f64, f64) {
     let contents = fs::read_to_string(input.trim())
         .expect("Should have been able to read the file");
 
     let input: Vec<&str> = contents.split('\n').collect();
-    let max_t = to_float(input[0].trim().to_string());
+    let max_t = to_float(input[0].split(' ').nth(0).unwrap().trim().to_string());
+    let dt = to_float(input[0].split(' ').nth(1).unwrap().trim().to_string());
 
     let (e_coeffs_temp,e_pows_temp) = field_constants(input[1].split(' ').collect());
     let (b_coeffs_temp,b_pows_temp) = field_constants(input[2].split(' ').collect());
@@ -48,8 +49,8 @@ pub fn setup(input: String) -> (Vec<crate::components::charge::Charge>, (Vec<f64
         vel.retain(|c| c != '(' && c != ')');
         let vel: Vec<&str> = vel.split(',').collect();
 
-        let pos = crate::components::point::Point::from(to_float(pos[0].to_string()),to_float(pos[1].to_string()),to_float(pos[2].to_string()));
-        let vel = crate::components::point::Point::from(to_float(vel[0].to_string()),to_float(vel[1].to_string()),to_float(vel[2].to_string()));
+        let pos = Point::from(to_float(pos[0].to_string()),to_float(pos[1].to_string()),to_float(pos[2].to_string()));
+        let vel = Point::from(to_float(vel[0].to_string()),to_float(vel[1].to_string()),to_float(vel[2].to_string()));
 
         let q = to_float(info[2].to_string());
         let b = info[3].to_string().trim().parse::<bool>().unwrap();
@@ -57,5 +58,5 @@ pub fn setup(input: String) -> (Vec<crate::components::charge::Charge>, (Vec<f64
         particles.push(c_new);
     }
 
-    return (particles, (e_coeffs,e_pows), (b_coeffs,b_pows), max_t);
+    return (particles, (e_coeffs,e_pows), (b_coeffs,b_pows), max_t, dt);
 }

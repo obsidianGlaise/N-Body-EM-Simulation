@@ -31,6 +31,9 @@ impl Point {
     }
 
     pub fn unit(self) -> Point {
+        if self.mag() == 0.0 {
+            return Point(0.0,0.0,0.0);
+        }
         Point(self.0/self.mag(), self.1/self.mag(), self.2/self.mag())
     }
 
@@ -44,6 +47,10 @@ impl Point {
         self.0 = x;
         self.1 = y;
         self.2 = z;
+    }
+
+    pub fn align(self, aligning_vector: Point) -> Point {
+        return Self::scalar_times(self.mag(), aligning_vector.unit());
     }
 
     pub fn x(self) -> f64 { self.0 }
